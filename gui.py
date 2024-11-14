@@ -65,7 +65,7 @@ class App:
         self.add_aresta_button.pack(pady=5)
 
         # Frame para inserção em lote
-        batch_frame = ttk.LabelFrame(self.root, text="Inserir em Lote Ex:(A, B 2; B C 3)")
+        batch_frame = ttk.LabelFrame(self.root, text="Inserir em Lote Ex:(A, B, C; A B 2; B C 3)")
         batch_frame.pack(padx=10, pady=10, fill="both", expand="yes")
 
         self.batch_entry = tk.Entry(batch_frame)
@@ -88,6 +88,11 @@ class App:
         # Novo botão para verificar se dois vértices são adjacentes
         self.verificar_adj_button = tk.Button(self.root, text="Verificar Adjacência", command=self.verificar_adjacencia, bg="lightblue")
         self.verificar_adj_button.pack(pady=5)
+
+
+        # Novo botão para calcular o caminho mais curto
+        self.calcular_caminho_button = tk.Button(self.root, text="Calcular Caminho Mais Curto", command=self.mostrar_entrada_caminho, bg="lightblue")
+        self.calcular_caminho_button.pack(pady=5)
 
         # Novo botão para limpar o grafo
         self.limpar_grafo_button = tk.Button(self.root, text="Limpar Grafo", command=self.limpar_grafo, bg="lightcoral")
@@ -233,10 +238,6 @@ class App:
         self.adjacencia_result_label.pack(pady=10)
 
 
-
-
-
-
     def visualizar_grafo(self):
         G = nx.DiGraph() if self.direcionado.get() else nx.Graph()
         for vertice in self.grafo.vertices:
@@ -257,6 +258,55 @@ class App:
         ordem = self.grafo.ordem()
         tamanho = self.grafo.tamanho()
         messagebox.showinfo("Informações do Grafo", f"Ordem: {ordem}\nTamanho: {tamanho}")
+
+    def mostrar_entrada_caminho(self):
+        """Exibe os campos para inserir os vértices de origem e destino e calcular o caminho mais curto."""
+        # Cria uma nova janela para inserir os vértices de origem e destino
+        self.caminho_window = tk.Toplevel(self.root)
+        self.caminho_window.title("Cálculo do Caminho Mais Curto")
+
+        # Entrada para o vértice de origem
+        self.origem_label = tk.Label(self.caminho_window, text="Inserir Vértice de Origem:")
+        self.origem_label.pack(pady=5)
+        self.origem_entry = tk.Entry(self.caminho_window)
+        self.origem_entry.pack(pady=5)
+
+        # Entrada para o vértice de destino
+        self.destino_label = tk.Label(self.caminho_window, text="Inserir Vértice de Destino:")
+        self.destino_label.pack(pady=5)
+        self.destino_entry = tk.Entry(self.caminho_window)
+        self.destino_entry.pack(pady=5)
+
+        # Botão para calcular o caminho mais curto
+        self.calcular_button = tk.Button(self.caminho_window, text="Calcular", command=self.calcular_caminho_curto, bg="lightblue")
+        self.calcular_button.pack(pady=5)
+
+        # Resultado do caminho
+        self.resultado_caminho_label = tk.Label(self.caminho_window, text="")
+        self.resultado_caminho_label.pack(pady=10)
+
+        # Adicionando rótulo para exibir o resultado na mesma janela
+        self.resultado_caminho_label = tk.Label(self.caminho_window, text="")
+        self.resultado_caminho_label.pack(pady=10)
+
+    def calcular_caminho_curto(self):
+        """Calcula o caminho mais curto entre os vértices de origem e destino e exibe o resultado."""
+        origem = self.origem_entry.get().strip()
+        destino = self.destino_entry.get().strip()
+
+        # Verifica se os vértices existem no grafo
+        if origem not in self.grafo.vertices or destino not in self.grafo.vertices:
+            self.resultado_caminho_label.config(text="Um ou ambos os vértices não existem no grafo.", fg="red")
+            return
+
+        # Chama o método de caminho mais curto
+        caminho, custo = self.grafo.caminho_mais_curto(origem, destino)
+
+        if caminho is None:
+            self.resultado_caminho_label.config(text=f"Não há caminho entre {origem} e {destino}.", fg="red")
+        else:
+            caminho_texto = " -> ".join(caminho)
+            self.resultado_caminho_label.config(text=f"Custo: {custo}\nCaminho: {caminho_texto}", fg="green")
 
     def run(self):
         self.root.mainloop()  # Inicia a interface

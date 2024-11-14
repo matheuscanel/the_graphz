@@ -1,3 +1,5 @@
+import heapq  # Adicione esta linha para importar o módulo heapq
+
 # Vértice
 class Vertice:
     def __init__(self, nome):
@@ -10,8 +12,6 @@ class Aresta:
         self.vertice1 = vertice1
         self.vertice2 = vertice2
         self.peso = peso
-
-# Grafo
 class Grafo:
     def __init__(self):
         self.vertices = {}
@@ -78,3 +78,50 @@ class Grafo:
         """Retorna o tamanho do grafo (número de arestas)."""
         return len(self.arestas)
 
+    def caminho_mais_curto(self, origem, destino):
+        """Usa o algoritmo de Dijkstra para calcular o caminho mais curto entre dois vértices."""
+        if origem not in self.vertices or destino not in self.vertices:
+            return None, None  # Retorna None se algum vértice não existir
+
+        # Inicializa a distância de todos os vértices como infinita
+        distancias = {vertice: float('inf') for vertice in self.vertices}
+        distancias[origem] = 0  # A distância para a origem é 0
+
+        # Inicializa o dicionário para armazenar os predecessores de cada vértice
+        predecessores = {vertice: None for vertice in self.vertices}
+
+        # Fila de prioridade (min-heap) para selecionar o próximo vértice a ser visitado
+        fila = [(0, origem)]  # (distância, vértice)
+
+        while fila:
+            distancia_atual, vertice_atual = heapq.heappop(fila)
+
+            # Se chegamos no destino, paramos
+            if vertice_atual == destino:
+                break
+
+            for vizinho in self.adjacentes(vertice_atual):
+                # Calcular o custo da aresta entre o vértice atual e o vizinho
+                peso_aresta = next(aresta.peso for aresta in self.arestas
+                                   if (aresta.vertice1 == vertice_atual and aresta.vertice2 == vizinho) or
+                                   (aresta.vertice2 == vertice_atual and aresta.vertice1 == vizinho))
+                nova_distancia = distancia_atual + peso_aresta
+
+                # Se encontramos uma distância melhor, atualizamos
+                if nova_distancia < distancias[vizinho]:
+                    distancias[vizinho] = nova_distancia
+                    predecessores[vizinho] = vertice_atual
+                    heapq.heappush(fila, (nova_distancia, vizinho))
+
+        # Reconstruir o caminho a partir do destino
+        caminho = []
+        atual = destino
+        while atual is not None:
+            caminho.insert(0, atual)
+            atual = predecessores[atual]
+
+        # Se o caminho para o destino não foi encontrado, retorna None
+        if distancias[destino] == float('inf'):
+            return None, None
+
+        return caminho, distancias[destino]
