@@ -125,3 +125,34 @@ class Grafo:
             return None, None
 
         return caminho, distancias[destino]
+
+
+    def euleriano(self):
+        """Verifica se o grafo é Euleriano."""
+        # Verifica se todos os vértices têm grau par
+        for vertice in self.vertices.values():
+            if len(self.adjacentes(vertice.nome)) % 2 != 0:
+                return False  # Se algum vértice tiver grau ímpar, não é Euleriano
+
+        # Verifica se o grafo é conexo (apenas para grafos não direcionados)
+        if not self.grafo_conexo():
+            return False
+
+        return True
+
+    def grafo_conexo(self):
+        """Verifica se o grafo é conexo (apenas para grafos não direcionados)."""
+        visitados = set()
+
+        def dfs(v):
+            visitados.add(v)
+            for adj in self.adjacentes(v):
+                if adj not in visitados:
+                    dfs(adj)
+
+        # Começa a busca em profundidade a partir de qualquer vértice
+        if self.vertices:
+            dfs(next(iter(self.vertices)))
+
+        # Verifica se todos os vértices foram visitados
+        return len(visitados) == len(self.vertices)

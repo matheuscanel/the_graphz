@@ -74,7 +74,7 @@ class App:
         self.batch_button.pack(pady=5)
 
         # Botão para visualizar o grafo
-        self.visualizar_button = tk.Button(self.root, text="Visualizar Grafo", command=self.visualizar_grafo, bg="lightblue")
+        self.visualizar_button = tk.Button(self.root, text="Visualizar Grafo", command=self.visualizar_grafo, bg="lightgreen")
         self.visualizar_button.pack(pady=5)
 
         # Botão para obter informações do grafo
@@ -94,6 +94,10 @@ class App:
         self.calcular_caminho_button = tk.Button(self.root, text="Calcular Caminho Mais Curto", command=self.mostrar_entrada_caminho, bg="lightblue")
         self.calcular_caminho_button.pack(pady=5)
 
+        # Novo botão para verificar se o grafo é Euleriano
+        self.verificar_euleriano_button = tk.Button(self.root, text="Verificar Grafo Euleriano", command=self.verificar_euleriano, bg="lightblue")
+        self.verificar_euleriano_button.pack(pady=5)
+
         # Novo botão para limpar o grafo
         self.limpar_grafo_button = tk.Button(self.root, text="Limpar Grafo", command=self.limpar_grafo, bg="lightcoral")
         self.limpar_grafo_button.pack(pady=5)
@@ -107,6 +111,15 @@ class App:
         self.grafo.vertices.clear()  # Limpa o dicionário de vértices
         self.grafo.arestas.clear()  # Limpa a lista de arestas
         self.result_label.config(text="Grafo limpo com sucesso!")
+
+    def verificar_euleriano(self):
+        """Verifica se o grafo é Euleriano e exibe o resultado."""
+        if self.grafo.euleriano():
+            self.result_label.config(text="O grafo é Euleriano!")
+        else:
+            self.result_label.config(text="O grafo NÃO é Euleriano!")
+
+
 
     def show_adjacentes_grau(self):
         """Abre uma nova tela onde o usuário pode inserir um vértice e ver seus adjacentes e grau."""
@@ -311,7 +324,7 @@ class App:
     def run(self):
         self.root.mainloop()  # Inicia a interface
 
-# Para executar a aplicação, você pode adicionar:
-if __name__ == "__main__":
-    app = App()
-    app.run()
+# # Para executar a aplicação, você pode adicionar:
+# if __name__ == "__main__":
+#     app = App()
+#     app.run()
